@@ -1,31 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import Posts from './components/Posts';
+import DataSource from './api/DataSource';
+import Pagination from './components/Pagination';
 import './App.css';
-import DataSource from "./api/DataSource";
 
-function App() {
+const App = () => {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage, setPostsPerPage] = useState(15);
+  const [postsPerPage] = useState(10);
 
   useEffect(() => {
-    const getPosts = async () => {
-      setLoading(true);
-      const results = await DataSource.get('/posts');
-      setPosts(results);
-      setLoading(false);
+    const fetchPosts = async () => {
+      setIsLoading(true);
+      const res = await DataSource.get('/posts');
+      setPosts(res.data);
+      setIsLoading(false);
     };
 
-    getPosts();
+    fetchPosts();
   }, []);
 
-  console.log(posts.data);
+  const lastPost = currentPage * postsPerPage;
+  const firstPost = lastPost - postsPerPage;
+  const currentPosts = posts.slice(firstPost, lastPost);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="App">
-      <div></div>
+      <div>
+        <h2>My Paginated Post List</h2>
+        <Posts posts={currentPosts} loading={isLoading} />
+        <Pagination
+          postsPerPage={postsPerPage}
+          totalPosts={posts.length}
+          paginate={paginate}
+        />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
