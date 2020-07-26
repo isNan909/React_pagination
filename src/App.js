@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, useEffect } from 'react';
 import './App.css';
+import DataSource from "./api/DataSource";
 
 function App() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(15);
+
+  useEffect(() => {
+    const getPosts = async () => {
+      setLoading(true);
+      const results = await DataSource.get('/posts');
+      setPosts(results);
+      setLoading(false);
+    };
+
+    getPosts();
+  }, []);
+
+  console.log(posts.data);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div></div>
     </div>
   );
 }
